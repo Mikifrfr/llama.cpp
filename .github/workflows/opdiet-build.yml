@@ -1,0 +1,62 @@
+name: "Opdiet overlay build"
+
+# Takes the validated b12608-mix-4aa1900 source tree (artifact of run 44934372473),
+# overlays the three op-diet patched model files from the opdiet branch,
+# and builds the ROCm gfx110X Windows bundle via the stock unsloth ROCm child.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  prep:
+    name: "Overlay opdiet files onto the validated pin tree"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout opdiet branch (patched model files)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          ref: opdiet
+
+      - name: Download the validated pin-tree source artifact
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
+        with:
+          name: app-source-b12608-mix-4aa1900
+          run-id: 44934372473
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: srcpkg
+
+      - name: Extract, overlay, repack
+        shell: bash
+        run: |
+          set -eux
+          mkdir -p tree
+          tar -xzf "srcpkg/llama.cpp-source-b12608-mix-4aa1900.tar.gz" -C tree --strip-components=1
+          cp -v src/models/models.h         tree/src/models/models.h
+          cp -v src/models/inkling2.cpp     tree/src/models/inkling2.cpp
+          cp -v src/models/inkling2-loop.cpp tree/src/models/inkling2-loop.cpp
+          tar -czf "llama.cpp-source-b12608-mix-4aa1900.tar.gz" -C tree .
+          sha256sum llama.cpp-source-b12608-mix-4aa1900.tar.gz
+
+      - name: Upload patched source
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
+        with:
+          name: app-source-opdiet
+          path: llama.cpp-source-b12608-mix-4aa1900.tar.gz
+          if-no-files-found: error
+
+  build:
+    needs: prep
+    uses: ./.github/workflows/unsloth-prebuilt-rocm.yml
+    with:
+      tag: b12608-mix-4aa1900
+      repo: Mikifrfr/llama.cpp
+      source_artifact: app-source-opdiet
+      matrix: '{"gfx_target":["gfx110X"]}'
+      windows_matrix: '{"include":[{"gfx_target":"gfx110X","slice":0,"slices":2},{"gfx_target":"gfx110X","slice":1,"slices":2}]}'
+      operating_systems: windows
+      rocm_version: weekly
+      rocm_cutoff: "20261114"
