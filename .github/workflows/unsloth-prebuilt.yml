@@ -216,7 +216,7 @@ jobs:
             || { echo "scripts/unsloth/pr-set.json: .prs must be an array of PR url strings, or {url, required} objects" >&2; exit 1; }
           PHASE='parse pr-set.json'
           PRS='[]'
-          URL_RE='^https://github\.com/(ggml-org|unslothai)/llama\.cpp/pull/([0-9]+)/commits/([0-9a-f]{40})/?$'
+          URL_RE='^https://github\.com/(ggml-org|unslothai|Mikifrfr)/llama\.cpp/pull/([0-9]+)/commits/([0-9a-f]{40})/?$'
           while read -r url REQUIRED; do
             [[ "$url" =~ $URL_RE ]] || { echo "refusing malformed PR url '$url' (expected https://github.com/{ggml-org,unslothai}/llama.cpp/pull/<n>/commits/<40-hex-sha>)" >&2; exit 1; }
             SRC="${BASH_REMATCH[1]}/llama.cpp"; NUM="${BASH_REMATCH[2]}"; SHA="${BASH_REMATCH[3]}"
