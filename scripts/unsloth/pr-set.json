@@ -49,6 +49,10 @@
   "https://github.com/unslothai/llama.cpp/pull/328/commits/02428e283cb078eb320deeda71ff599278bd4927",
   "https://github.com/unslothai/llama.cpp/pull/348/commits/56ec1e88a05237cc2f0590b418256e32260b6662",
   "https://github.com/unslothai/llama.cpp/pull/335/commits/b240c56069c24a87272f76be2678d04400d39ef8",
-  "https://github.com/unslothai/llama.cpp/pull/376/commits/f12ce09a08c9aea37588245a5124645e1fe79bda"
+  "https://github.com/unslothai/llama.cpp/pull/376/commits/f12ce09a08c9aea37588245a5124645e1fe79bda",
+  {
+   "url": "https://github.com/Mikifrfr/llama.cpp/pull/1/commits/ed19770ed14f3d44cc66e847a4acfdc5584fef9c",
+   "required": true
+  }
  ]
 }
